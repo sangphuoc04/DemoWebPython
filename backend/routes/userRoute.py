@@ -1,6 +1,6 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, jsonify
 from backend.services.showUser import showUser
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+
 
 user = Blueprint('user', __name__)
 
@@ -9,11 +9,19 @@ def get_all_users():
     users = showUser.get_all_users()
     return jsonify(users)
 
-@user.route('/addusers', methods=['POST'])
-def create_user():
-    data = request.get_json()
-    username = data.get("username")
-    email = data.get("email")
-    password_hash = data.get("password_hash")
-    result = showUser().create_user(username, email, password_hash)
+@user.route('/getuser/<user_id>', methods=['GET'])
+def get_one_user(user_id):
+    user = showUser.get_one_user(user_id)
+    if user:
+        return jsonify(user)
+    return jsonify({"message": "User not found"}), 404
+
+@user.route('/updateuser/<user_id>', methods=['PUT'])
+def update_user(user_id):
+    user = showUser.update_user(user_id)
+    return jsonify(user)
+
+@user.route('/deleteuser/<user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    result = showUser.delete_user(user_id)
     return jsonify(result)
