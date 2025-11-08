@@ -1,5 +1,6 @@
 from flask import Flask
 from mongoengine import connect
+from flask_jwt_extended import JWTManager
 
 connect(
     db="PythonDemoWeb",
@@ -9,13 +10,17 @@ connect(
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'supersecretkey'
- 
+    app.config['JWT_SECRET_KEY'] = 'jwtsecret'
+    jwt = JWTManager(app)
 
+    
     from backend.routes.HelloRoute import hello
     app.register_blueprint(hello)
     from backend.routes.aboutRoute import about
     app.register_blueprint(about)
     from backend.routes.userRoute import user
     app.register_blueprint(user)
+    from backend.routes.authRoute import auth
+    app.register_blueprint(auth)
 
     return app
